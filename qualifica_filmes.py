@@ -1,13 +1,14 @@
 import requests
+import json
 from bs4 import BeautifulSoup
 
 class AdoroCinema:
-    def extrairNomeFilme(self, filme):
+    def extrairmovieName(self, filme):
         url = "https://www.adorocinema.com/filmes/" + filme +'/'
         htmlFilme = requests.get(url).text
         bsS = BeautifulSoup(htmlFilme, 'html.parser')
         nome = bsS.find('div', class_="titlebar-title titlebar-title-lg").get_text(strip=True)
-        return nome
+        return nome 
     
 
     def extrairSinopseFilme (self, filme):      
@@ -42,7 +43,7 @@ class AdoroCinema:
     
     # Função que recebe o nome do arquivo de comentários do filme, lê cada line do arquivo e
     # Verifica se contém words positivas ou negativas a partir de listas predefinidas de words.
-    def contabilizaPositivoNegativo(self, filme):
+    def countPositiveNegative(self, filme):
         # Abre o arquivo para leitura
         with open(filme + '_comentarios.txt', 'r', encoding='utf-8') as arq_entrada:
             # Inicialize contadores
@@ -74,10 +75,30 @@ class AdoroCinema:
         # Retorne os resultados
         return positives, negatives, totalComents
 
+    def storeResults(self, nome, totalComents, percentPositives, percentNegatives):
+        data = {}
+        data['nome'] = nome
+        data['totalComents'] = totalComents
+        data['percentPositives'] = percentPositives
+        data['percentNegatives'] = percentNegatives
+        try:
+            with open('data.json') as results:
+                existing_data = json.load(results)
+        except:
+            existing_data = []
+
+        existing_data.append(data)
+        
+        with open('data.json', 'w', encoding='utf-8') as results:
+            json.dump(existing_data, results, ensure_ascii=False, indent=4)
+
+
 
 filme = input('Digite o código do filme, conforme listado na barra de endereço do site https://www.adorocinema.com/: ')
 n = int(input('Digite quantas páginas de comentários você deseja consultar: '))
 crawler = AdoroCinema()
+
+movieName = crawler.extrairmovieName(filme)
 
 sinopse = crawler.extrairSinopseFilme(filme)
 crawler.salvarSinopseFilme(filme, sinopse)
@@ -85,14 +106,16 @@ crawler.salvarSinopseFilme(filme, sinopse)
 comentarios = crawler.extrairComentariosFilme(filme, n)
 crawler.salvarComentariosFilme(filme, comentarios)
 
-positives, negatives, totalComents = crawler.contabilizaPositivoNegativo(filme)
+positives, negatives, totalComents = crawler.countPositiveNegative(filme)
 
 percentPositives = positives / totalComents
 
 percentNegatives = negatives / totalComents
 print('')
-print(f"nome do filme: {crawler.extrairNomeFilme(filme)}")
+print(f"nome do filme: {movieName}")
 print(f"total de comentários lidos: {totalComents}")
 print(f"words positivas: {positives} (percentual: {percentPositives:.2%})")
 print(f"words negativas: {negatives} (percentual: {percentNegatives:.2%})")
 print('Programa executado com sucesso. Consulte os arquivos gerados com a sinopse e os comentários do filme.')
+
+crawler.storeResults(movieName, totalComents, percentPositives, percentNegatives)

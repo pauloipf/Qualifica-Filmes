@@ -1,0 +1,26 @@
+[
+    {
+        "nome": "Forrest Gump - O Contador de HistÃƒÆ’Ã‚Â³rias",
+        "totalComents": 93,
+        "percentPositives": 0.6344086021505376,
+        "percentNegatives": 0.053763440860215055
+    },
+    {
+        "nome": "Um Sonho de Liberdade",
+        "totalComents": 92,
+        "percentPositives": 0.6630434782608695,
+        "percentNegatives": 0.03260869565217391
+    },
+    {
+        "nome": "O Poderoso ChefÃ£o",
+        "totalComents": 93,
+        "percentPositives": 0.41935483870967744,
+        "percentNegatives": 0.10752688172043011
+    },
+    {
+        "nome": "A Lista de Schindler",
+        "totalComents": 113,
+        "percentPositives": 0.48672566371681414,
+        "percentNegatives": 0.035398230088495575
+    }
+]
